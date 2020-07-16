@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册</title>
+    <link rel="stylesheet" href="./bootstrap.css">
+    <style>
+        #register{
+            width: 400px;
+            margin: 200px auto;
+        }
+        #alert-info{
+            padding: 2px;
+            margin: 2px 2px 10px 2px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class=" panel panel-primary" id="register">
+            <div class="panel-heading">
+                注册
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label for="username">用户名</label>
+                    <input type="text" name="username" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="password">密码</label>
+                    <input type="password" name="password" class="form-control">
+                </div>
+                <div id="alert-info" class=" alert alert-danger">eee</div>
+                <button id="btn" class="btn btn-primary form-control">注册</button>
+                <a href="login.html" class="">已有账号，登录</a>
+            </div>
+            <div class="panel-footer">
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<script src="./jquery-1.12.2.js"></script>
+<script>
+    window.onload = function(){
+        var btn = document.querySelector('#btn');
+        var input = document.querySelectorAll('input');
+        var oalert = document.querySelector('#alert-info');
+        btn.onclick = function(){
+            $.ajax({
+                    type:'POST',
+                    url:'register.php',
+                    data:{
+                    username:input[0].value,
+                    password:input[1].value,
+                    addtime:new Date().getTime()
+                },
+                    success:function(data){
+                        var obj = JSON.parse(data);
+                        if(obj.code){
+                            oalert.className = 'alert alert-danger';
+                        }else{
+                            oalert.className = 'alert alert-success';
+                            setTimeout(()=>{
+                            location.href = 'login.html';
+                        },1500)
+                        }
+                        oalert.innerHTML = obj.message;
+                        oalert.style.display = 'block';
+                    },
+                    error:function(msg){
+                        console.log(msg)
+                    }
+                })
+        }
+    };
+
+
+</script>

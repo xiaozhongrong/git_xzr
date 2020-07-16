@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./bootstrap.css">
+    <script src="./jquery-1.12.2.js"></script>
+</head>
+<body>
+    
+    
+    <div class="container">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h2>获取用户列表</h2>
+            </div>
+            <div class="panel-body">
+                <button id="btn" class="btn btn-info">获取用户数据</button>
+            </div>
+            <div class="panel-footer">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <td>用户ID</td>
+                            <td>用户名</td>
+                            <td>密码</td>
+                            <td>注册日期</td>
+                            <td>操作</td>
+                        </tr>
+                    </thead>
+                    <tbody id="tb">
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<script>
+    window.onload = function(){
+        var btn = document.querySelector('#btn');
+        var tb = document.querySelector('#tb');
+        btn.onclick = function(){
+            $.ajax({
+                type:"POST",
+                url:"userlist.php",
+                success:function(data){
+                    var arr = JSON.parse(data);
+                    var str = '';
+                    //通过循环创建节点并渲染到页面上
+                    for(var i = 0; i < arr.length; i++){
+                        str += `<tr>
+                            <td>${arr[i].id}</td>
+                            <td>${arr[i].username}</td>
+                            <td>${arr[i].password}</td>
+                            <td>${getMyDate(Number(arr[i].creattime))}</td>
+                            <td id=${arr[i].id}><a href="#">删除</a>/<a href="updata.html?id=${arr[i].id}">修改</a></td>
+                        </tr>`;
+                    }
+                    tb.innerHTML = str;
+                },
+                error:function(res){
+                    console.log(res);
+                }
+            });
+        }
+        //给所有的删除和修改按钮添加点击事件
+        tb.onclick = function(ev){
+            var e = ev || window.event;
+            var target = e.target || window.event.srcElement;
+            if(target.nodeName.toLowerCase() == 'a' && target.innerHTML == '删除'){
+                //拿到当前要删除的数据的id
+                var id = target.parentNode.id;
+                $.ajax({
+                        type:"GET",
+                        url:"deletedata.php",
+                        data:{
+                            id:id
+                        },
+                        success:function(data){
+                            var obj = JSON.parse(data);
+                            if(obj.code == 0){
+                                tb.removeChild(target.parentNode.parentNode)
+                            }else{
+                                alert(obj.message)
+                            }
+                        },
+                        error:function(res){
+                            alert(res)
+                        }
+                    })
+                //取消a标签默认行为
+                return false;
+            }
+        }
+    }
+    function getMyDate(str){
+        var oDate = new Date(str),
+        oYear = oDate.getFullYear(),
+        oMonth = oDate.getMonth()+1,
+        oDay = oDate.getDate(),
+        oHour = oDate.getHours(),
+        oMin = oDate.getMinutes(),
+        oSen = oDate.getSeconds(),
+        oTime = oYear +'-'+ addZero(oMonth) +'-'+ addZero(oDay) +' '+ addZero(oHour) +':'+
+        addZero(oMin) +':'+addZero(oSen);
+        return oTime;
+    }
+
+    //补零操作
+    function addZero(num){
+        if(parseInt(num) < 10){
+            num = '0'+num;
+        }
+        return num;
+    }
+;</script>

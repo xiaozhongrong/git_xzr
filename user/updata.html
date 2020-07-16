@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>修改用户名</title>
+    <link rel="stylesheet" href="./bootstrap.css">
+    <style>
+        #updata{
+            width: 400px;
+            margin: 200px auto;
+        }
+        #alert-info{
+            padding: 2px;
+            margin: 2px 2px 10px 2px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class=" panel panel-primary" id="updata">
+            <div class="panel-heading">
+                修改数据
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label for="username">用户名</label>
+                    <input type="text" name="username" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="password">密码</label>
+                    <input type="password" name="text" class="form-control">
+                    <input type="hidden" name="id" class="form-control">
+                </div>
+                <div id="alert-info" class=" alert alert-danger"></div>
+                <button id="btn" class="btn btn-primary form-control">完成修改</button>
+                <a href="userlist.html" class="">查看用户列表</a>
+            </div>
+            <div class="panel-footer">
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<script src="./jquery-1.12.2.js"></script>
+<script>
+    window.onload = function(){
+        var btn = document.querySelector('#btn');
+        var input = document.querySelectorAll('input');
+        var oalert = document.querySelector('#alert-info');
+
+        //点击按钮提交数据
+        btn.onclick = function(){
+            $.ajax({
+                type:"POST",
+                url:"submitdata.php",
+                data:{
+                    username:input[0].value,
+                    password:input[1].value,
+                    id:input[2].value
+                },
+                success:function(data){
+                    var obj = JSON.parse(data);
+                        if(obj.code){
+                            oalert.className = 'alert alert-success';
+                            setTimeout(()=>{
+                            location.href = 'userlist.html';
+                        },1500)
+                        }else{
+                            oalert.className = 'alert alert-danger';
+                        }
+                        oalert.innerHTML = obj.message;
+                        oalert.style.display = 'block';
+                },
+                error:function(res){
+                    console.log(res)
+                }
+            })
+        }
+
+        //测试代码
+        /*var start = location.search.indexOf('id=') + 3;
+        var id = Number(location.search.substring(start,start + 1)); */
+        // console.log(id)
+        // console.log(start) //4
+
+        function valueByName(search,name){
+            var start = search.indexOf(name + '=');
+            if(start == -1){
+                return null;
+            }else{
+                var end = search.indexOf("&");
+                if(end == -1){
+                    end = search.length;
+                }
+                var str = search.substring(start,end);
+                var arr = str.split("=");
+                return arr[1];
+            }
+        }
+        //获取需要修改的数据的id
+        var id = valueByName(location.search,'id');        
+        //测试代码
+        /*var str = "name1=value1&name2=value2&name3=value3";
+        console.log(valueByName(str,'name1')); */
+
+
+        //发送id到PHP页面
+        $.ajax({
+             type:"GET",
+             url:"updata.php",
+             data:{
+                 id:id
+             },
+             success:function(data){
+                var obj = JSON.parse(data);
+                var arr = JSON.parse(obj.message);
+                input[0].value = arr.username;
+                input[1].value = arr.password;
+                input[2].value = arr.id;
+             },
+             error:function(res){
+                 console.log(res)
+             }
+        })
+    }
+</script>
