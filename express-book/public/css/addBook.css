@@ -1,0 +1,27 @@
+#control{
+    height: 40px;
+    width: 100%;
+    background-color: purple;
+    font-size: 18px;
+    font-weight: 800;
+    color: aliceblue;
+    text-align: center;
+    line-height: 40px;
+}
+input{
+    width: 100%;
+    margin-top: 10px;
+    height: 30px;
+}
+input[type=submit]{
+    /* display: block; */
+    background-color: rgb(50, 148, 50);
+    border: none;
+    border-radius: 5px;
+    height: 30px;
+    width: 15%;
+    margin-top: 10px;
+    float: right;
+    color: aliceblue;
+    font-size: 16px;
+}
